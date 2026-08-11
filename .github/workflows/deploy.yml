@@ -7,8 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/fleettrack-frontend
-  BACKEND_IMAGE: ghcr.io/${{ github.repository }}/fleettrack-backend
+  FRONTEND_IMAGE: ghcr.io/nazopayments/fleetmanagement/fleettrack-frontend
+  BACKEND_IMAGE: ghcr.io/nazopayments/fleetmanagement/fleettrack-backend
   AZURE_CONTAINER_APP_ENV: my-aca-env
   AZURE_RESOURCE_GROUP: my-resource-group
 
