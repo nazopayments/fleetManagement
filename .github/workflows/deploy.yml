@@ -36,6 +36,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.FRONTEND_IMAGE }}:latest,${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          build-args: |
+            VITE_API_URL=https://fleettrack-backend.ambitiousrock-2f0b0063.southafricanorth.azurecontainerapps.io
 
       - name: Build and push Backend
         uses: docker/build-push-action@v5
