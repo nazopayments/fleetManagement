@@ -3,7 +3,7 @@
  * Manages: auth state, vehicle list, and page navigation.
  */
 import { useState, useCallback } from 'react'
-import LoginScreen from './pages/LoginScreen.jsx'
+import { LoginScreen, RegisterScreen, ForgotPasswordScreen } from './pages/auth/AuthFlow.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import WeeklyTracker from './pages/WeeklyTracker.jsx'
 import DriversPage from './pages/DriversPage.jsx'
@@ -12,6 +12,8 @@ import { SAMPLE_VEHICLES, SAMPLE_DRIVERS } from './data/sampleData.js'
 
 const VIEWS = {
   LOGIN: 'login',
+  REGISTER: 'register',
+  FORGOT: 'forgot',
   DASHBOARD: 'dashboard',
   TRACKER: 'tracker',
   DRIVERS: 'drivers',
@@ -64,7 +66,9 @@ export default function App() {
 
   return (
     <>
-      {view === VIEWS.LOGIN && <LoginScreen onLogin={handleLogin} />}
+      {view === VIEWS.LOGIN && <LoginScreen onLogin={handleLogin} onNavRegister={() => setView(VIEWS.REGISTER)} onNavForgot={() => setView(VIEWS.FORGOT)} />}
+      {view === VIEWS.REGISTER && <RegisterScreen onLogin={handleLogin} onNavLogin={() => setView(VIEWS.LOGIN)} />}
+      {view === VIEWS.FORGOT && <ForgotPasswordScreen onLogin={handleLogin} onNavLogin={() => setView(VIEWS.LOGIN)} />}
       {view === VIEWS.DASHBOARD && (
         <Dashboard
           user={currentUser}
