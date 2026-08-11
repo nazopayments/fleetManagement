@@ -60,6 +60,7 @@ jobs:
           imageToDeploy: ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
           containerAppName: fleettrack-backend
           resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppEnvironment: ${{ env.AZURE_CONTAINER_APP_ENV }}
           environmentVariables: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             IWIN_API_TOKEN=${{ secrets.IWIN_API_TOKEN }}
@@ -73,6 +74,7 @@ jobs:
           imageToDeploy: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
           containerAppName: fleettrack-frontend
           resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppEnvironment: ${{ env.AZURE_CONTAINER_APP_ENV }}
           registryUrl: ${{ env.REGISTRY }}
           registryUsername: ${{ github.actor }}
           registryPassword: ${{ secrets.GITHUB_TOKEN }}
