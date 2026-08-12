@@ -70,9 +70,6 @@ jobs:
           environmentVariables: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             IWIN_API_TOKEN=${{ secrets.IWIN_API_TOKEN }}
-          registryUrl: ${{ env.REGISTRY }}
-          registryUsername: ${{ github.actor }}
-          registryPassword: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy Frontend to Container Apps
         uses: azure/container-apps-deploy-action@v1
