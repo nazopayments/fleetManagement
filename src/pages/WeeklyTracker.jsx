@@ -3,6 +3,7 @@
  * Per-vehicle weekly fare entry, financial breakdown, and validation guardrail.
  */
 import { useState, useMemo, useEffect } from 'react'
+import { apiFetch } from '../api.js'
 import { formatRand, getWeeklyCycle, getWeekKey } from '../data/sampleData.js'
 
 // ── Number parsing helper ────────────────────────────────────────
@@ -179,31 +180,54 @@ export default function WeeklyTracker({ vehicle, drivers = [], onBack, onSave, w
     setSaved(false)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (exceedsTotal) {
       setSaveError(true)
       return
     }
     setSaveError(false)
-    const updatedVehicle = {
-      ...vehicle,
-      weeks: localWeeks,
-      weekAllocations: {
-        ...(vehicle.weekAllocations || {}),
-        [currentWeekKey]: {
-          driverId,
+    
+    try {
+      await apiFetch('/api/weekly-fares', {
+        method: 'POST',
+        body: JSON.stringify({
+          vehicle_id: vehicle.id,
+          driver_id: driverId || 0, // Fallback if no driver
+          week_start_date: currentCycle[0].date.toISOString().split('T')[0],
           installment: parse(installment),
-          driverShare,
-          maintenance
-        }
-      },
-      weeklyData: localWeeks[getWeekKey(getWeeklyCycle(0))] || getWeeklyCycle(0),
-      installment: parse(installment),
-      driverSharePct: totalCollected > 0 ? (driverShare / totalCollected) * 100 : 25,
+          driver_share: driverShare,
+          maintenance: maintenance,
+          total_collected: totalCollected,
+          daily_fares: currentCycle.map(d => ({
+            date: d.date.toISOString().split('T')[0],
+            amount: parse(d.fare) || 0
+          }))
+        })
+      })
+
+      const updatedVehicle = {
+        ...vehicle,
+        weeks: localWeeks,
+        weekAllocations: {
+          ...(vehicle.weekAllocations || {}),
+          [currentWeekKey]: {
+            driverId,
+            installment: parse(installment),
+            driverShare,
+            maintenance
+          }
+        },
+        weeklyData: localWeeks[getWeekKey(getWeeklyCycle(0))] || getWeeklyCycle(0),
+        installment: parse(installment),
+        driverSharePct: totalCollected > 0 ? (driverShare / totalCollected) * 100 : 25,
+      }
+      onSave(updatedVehicle)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      console.error(err)
+      alert("Failed to save to database: " + err.message)
     }
-    onSave(updatedVehicle)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
   }
 
   return (

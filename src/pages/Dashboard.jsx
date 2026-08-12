@@ -7,24 +7,12 @@ import { getTodayFormatted, genId, getWeeklyCycle, getWeekKey } from '../data/sa
 import VehicleCard from '../components/VehicleCard.jsx'
 import AddVehicleModal from '../components/AddVehicleModal.jsx'
 
-export default function Dashboard({ user, vehicles, onSelectVehicle, onAddVehicle, onUpdateVehicle, onOpenDrivers, onOpenProfile, weekOffset, setWeekOffset }) {
+export default function Dashboard({ user, vehicles, onSelectVehicle, onAddVehicle, onUpdateVehicle, onOpenDrivers, onOpenProfile, weekOffset, setWeekOffset, isLoading }) {
   const [showModal, setShowModal] = useState(false)
   const today = getTodayFormatted()
 
   const handleAddVehicle = (formData) => {
-    const newVehicle = {
-      id: genId(),
-      registration: formData.registration.toUpperCase(),
-      make: formData.make,
-      model: formData.model,
-      color: formData.color,
-      weeklyData: getWeeklyCycle(0),
-      weeks: { [getWeekKey(getWeeklyCycle(0))]: getWeeklyCycle(0) },
-      installment: 4000,
-      driverSharePct: 25,
-      weekHistory: [],
-    }
-    onAddVehicle(newVehicle)
+    onAddVehicle(formData)
     setShowModal(false)
   }
 
@@ -214,6 +202,13 @@ export default function Dashboard({ user, vehicles, onSelectVehicle, onAddVehicl
           </div>
         </div>
 
+        {isLoading ? (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
+            <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid rgba(59,130,246,0.2)', borderTopColor: '#3b82f6', borderRadius: '50%', marginBottom: '1rem' }} />
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Loading Fleet Data...</p>
+          </div>
+        ) : (
+          <>
         {/* Stats bar */}
         <div
           style={{
@@ -277,6 +272,8 @@ export default function Dashboard({ user, vehicles, onSelectVehicle, onAddVehicl
               />
             ))}
           </div>
+        )}
+          </>
         )}
       </main>
 

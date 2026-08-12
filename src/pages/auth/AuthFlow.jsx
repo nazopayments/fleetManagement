@@ -1,4 +1,5 @@
 import { useState, useId } from 'react'
+import { setAuthToken } from '../../api'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -40,6 +41,12 @@ function OtpScreen({ phone, onVerify, onCancel }) {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Invalid OTP')
+      
+      // Save the real JWT token
+      if (data.token) {
+        setAuthToken(data.token)
+      }
+      
       onVerify(data.user)
     } catch (err) {
       setError(err.message)
