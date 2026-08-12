@@ -64,6 +64,9 @@ jobs:
           resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
           containerAppEnvironment: ${{ env.AZURE_CONTAINER_APP_ENV }}
           targetPort: 8000
+          registryUrl: ${{ env.REGISTRY }}
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
           environmentVariables: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             IWIN_API_TOKEN=${{ secrets.IWIN_API_TOKEN }}
