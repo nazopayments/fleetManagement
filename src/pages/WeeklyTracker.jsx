@@ -163,6 +163,9 @@ export default function WeeklyTracker({ vehicle, drivers = [], onBack, onSave, w
   const exceedsTotal = totalAllocated > totalCollected && totalCollected > 0
   const remainder = totalCollected - totalAllocated
 
+  // Check if all 7 days have received an input
+  const allDaysPopulated = weeklyData.every(d => d.fare !== undefined && d.fare !== null && d.fare !== '')
+
   const handleFareChange = (idx, value) => {
     setLocalWeeks((prev) => {
       const currentWeekData = prev[currentWeekKey] || currentCycle
@@ -543,7 +546,8 @@ export default function WeeklyTracker({ vehicle, drivers = [], onBack, onSave, w
         </section>
 
         {/* ── Financial Breakdown ── */}
-        <section aria-labelledby="breakdown-heading" style={{ marginBottom: '2rem' }}>
+        {allDaysPopulated && (
+          <section aria-labelledby="breakdown-heading" style={{ marginBottom: '2rem' }}>
           <h2
             id="breakdown-heading"
             style={{
@@ -736,6 +740,7 @@ export default function WeeklyTracker({ vehicle, drivers = [], onBack, onSave, w
             )}
           </div>
         </section>
+        )}
 
         {/* ── Save Button ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem' }}>
@@ -754,34 +759,33 @@ export default function WeeklyTracker({ vehicle, drivers = [], onBack, onSave, w
           <button
             id="save-submit-btn"
             onClick={handleSave}
-            disabled={exceedsTotal || totalCollected === 0}
+            disabled={exceedsTotal || !allDaysPopulated}
             style={{
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-              padding: '0.8rem 1.75rem',
-              background: exceedsTotal || totalCollected === 0
-                ? 'rgba(100,116,139,0.3)'
-                : 'linear-gradient(135deg, #059669, #0891b2)',
-              border: exceedsTotal ? '1.5px solid var(--color-border-error)' : '1.5px solid transparent',
+              padding: '0.9rem 2.5rem',
+              background: exceedsTotal || !allDaysPopulated
+                ? 'var(--color-bg-elevated)'
+                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              border: exceedsTotal || !allDaysPopulated ? '1px solid var(--color-border)' : 'none',
               borderRadius: 'var(--radius-md)',
-              color: exceedsTotal || totalCollected === 0 ? 'var(--color-text-muted)' : '#fff',
-              fontSize: '0.92rem', fontWeight: 700,
-              cursor: exceedsTotal || totalCollected === 0 ? 'not-allowed' : 'pointer',
-              transition: 'all var(--transition-smooth)',
-              boxShadow: exceedsTotal || totalCollected === 0 ? 'none' : '0 4px 16px rgba(5,150,105,0.35)',
+              color: exceedsTotal || !allDaysPopulated ? 'var(--color-text-muted)' : '#fff',
+              fontWeight: 800,
+              cursor: exceedsTotal || !allDaysPopulated ? 'not-allowed' : 'pointer',
+              transition: 'all var(--transition-fast)',
+              boxShadow: exceedsTotal || !allDaysPopulated ? 'none' : '0 4px 16px rgba(5,150,105,0.35)',
             }}
-            onMouseEnter={(e) => {
-              if (!exceedsTotal && totalCollected > 0) {
+            onMouseOver={(e) => {
+              if (!exceedsTotal && allDaysPopulated) {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 6px 24px rgba(5,150,105,0.5)'
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(5,150,105,0.45)'
               }
             }}
-            onMouseLeave={(e) => {
+            onMouseOut={(e) => {
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = exceedsTotal || totalCollected === 0 ? 'none' : '0 4px 16px rgba(5,150,105,0.35)'
+              e.currentTarget.style.boxShadow = exceedsTotal || !allDaysPopulated ? 'none' : '0 4px 16px rgba(5,150,105,0.35)'
             }}
-            aria-disabled={exceedsTotal || totalCollected === 0}
+            aria-disabled={exceedsTotal || !allDaysPopulated}
           >
-            {exceedsTotal ? '⛔ Cannot Save' : totalCollected === 0 ? '📝 Enter Fares First' : '💾 Save / Submit'}
+            {exceedsTotal ? '⛔ Cannot Save' : !allDaysPopulated ? '📝 Enter All Fares First' : '💾 Save / Submit'}
           </button>
         </div>
 
