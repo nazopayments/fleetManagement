@@ -63,6 +63,7 @@ jobs:
           containerAppName: fleettrack-backend
           resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
           containerAppEnvironment: ${{ env.AZURE_CONTAINER_APP_ENV }}
+          targetPort: 8000
           environmentVariables: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             IWIN_API_TOKEN=${{ secrets.IWIN_API_TOKEN }}
