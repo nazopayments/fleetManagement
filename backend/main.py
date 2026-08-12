@@ -8,7 +8,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from database import SessionLocal, User, Otp
+from database import SessionLocal, User, Otp, Organization
 
 app = FastAPI(title="FleetTrack Auth API")
 
@@ -73,8 +73,14 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if user:
         raise HTTPException(status_code=400, detail="User already exists")
     
-    # Store user (or store temporarily until OTP verified, simplified for POC)
-    new_user = User(name=req.name, phone=req.phone)
+    # Provision a new Organization for the fleet owner
+    new_org = Organization(name=f"{req.name}'s Fleet", subscription_tier="free")
+    db.add(new_org)
+    db.commit()
+    db.refresh(new_org)
+
+    # Store user and link to their new organization
+    new_user = User(name=req.name, phone=req.phone, organization_id=new_org.id, role="owner")
     db.add(new_user)
     db.commit()
     
@@ -110,7 +116,9 @@ def verify_otp(req: VerifyRequest, db: Session = Depends(get_db)):
         "user": {
             "id": user.id,
             "name": user.name,
-            "phone": user.phone
+            "phone": user.phone,
+            "organization_id": user.organization_id,
+            "role": user.role
         },
         "token": "mock-jwt-token" # In a real app, generate a JWT here
     }
